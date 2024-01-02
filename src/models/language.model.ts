@@ -274,6 +274,15 @@ export interface languageStruct {
       noAnyCharInPatternNextToRegex__md: string
     }
   },
+  rawGogParser: {
+    docs__md: {
+      self: string[],
+      input: string[]
+    }, errors: {
+      gogNotCompatible: string,
+      fatalError__i: string
+    }
+  },
   sgdbProvider: {
     nsfwInputTitle: string,
     humorInputTitle: string,

@@ -15,13 +15,14 @@ export const availableParserInputs: Record<ParserType, string[]> = {
   'Steam': ['onlyGames','onlyInstalled','sourceMods'],
   'UPlay': ['uplayDir','uplayLauncherMode'],
   'UWP': ['UWPDir', 'UWPLauncherMode'],
-  'EA Desktop': ['eaGamesDir','eaLauncherMode']
+  'EA Desktop': ['eaGamesDir','eaLauncherMode'],
+  'Raw GOG': []
 };
 
 export const availableParsers: ParserType[] = Object.keys(availableParserInputs) as ParserType[];
 
 export const superTypes: Record<SuperType, ParserType[]> = {
-  'Manual': ['Manual'],
+  'Manual': ['Manual','Raw GOG'],
   'ArtworkOnly': ['Steam'],
   'ROM': [
     'Glob',

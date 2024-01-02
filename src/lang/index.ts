@@ -244,6 +244,17 @@ function getMarkdown(langPath: string) {
         ]
       }
     },
+    rawGogParser: {
+      docs__md: {
+        self: [
+          require(`${langPath}/raw-gog-parser.md`),
+          require(`${langPath}/raw-gog-parser-input.md`)
+        ],
+        input: [
+          require(`${langPath}/raw-gog-parser-input.md`)
+        ]
+      }
+    },
     sgdbProvider: {
       docs__md: {
         self: [] as string[],

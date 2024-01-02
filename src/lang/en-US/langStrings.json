@@ -220,6 +220,12 @@
       "noAnyCharInPatternNextToRegex__md": "> Any char `?`, inside a pattern, can not be next to `${regex}`!"
     }
   },
+  "rawGogParser": {
+    "errors": {
+      "fatalError__i": "> Raw GOG parser failed with fatal error:\n ${error}",
+      "gogNotCompatible": "> Raw GOG parser is currently only available on Windows."
+    }
+  },
   "sgdbProvider": {
     "nsfwInputTitle": "Allow NSFW artwork",
     "humorInputTitle": "Allow joke artwork",

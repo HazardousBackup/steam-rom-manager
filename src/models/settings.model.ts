@@ -5,7 +5,8 @@ export interface PreviewSettings {
     deleteDisabledShortcuts: boolean,
     imageZoomPercentage: number,
     preload: boolean,
-    imageTypes: string[]
+    imageTypes: string[],
+    hideUserAccount: boolean
 }
 
 export interface AppSettings {
@@ -24,6 +25,8 @@ export interface AppSettings {
   },
   language: string,
   theme: string,
+  emudeckInstall: boolean,
+  autoUpdate: boolean,
   offlineMode: boolean,
   enabledProviders: string[],
   batchDownloadSize: number,

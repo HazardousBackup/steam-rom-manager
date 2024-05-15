@@ -23,8 +23,8 @@
       "removeAppList": "Remove from Steam",
       "remainingImages": "Retrieving urls:",
       "stopUrlRetrieving": "Stop",
-      "exportSelections": "Export",
-      "importSelections": "Import",
+      "exportSelections": "Export settings",
+      "importSelections": "Import settings",
       "backButton": "Back",
       "logButton": "Log"
     },
@@ -48,7 +48,7 @@
         "disabledConfigurations__i": "${count} user configuration(s) was/were skipped (disabled by user).",
         "invalidConfigurations__i": "${count} user configuration(s) was/were skipped (invalid).",
         "executingParsers": "Executing parsers.",
-        "shutdownSteam": "Please shutdown Steam if it is running.",
+        "shutdownSteam": "If Steam is running, exit Steam.",
         "noParserConfigurations": "Please create parser configuration in \"Parsers\" menu first.",
         "parserFoundNoFiles": "Parser(s) found no files matching user configuration.",
         "allImagesRetrieved": "All available image urls retrieved.",
@@ -93,6 +93,12 @@
       "fatalError__i": "> Steam parser failed with fatal error:\n ${error}"
     }
   },
+  "nonSRMShortcutsParser": {
+    "errors": {
+      "noSteamAccounts": "> Steam directory specified has no accounts.",
+      "fatalError__i": "> Non-SRM Shortcuts parser failed with fatal error:\n ${error}"
+    }
+  },
   "manualParser": {
     "manifestsInputTitle": "Manifests Directory",
     "manifestsInputPlaceholder": "/path/to/your/manifests/",
@@ -116,17 +122,24 @@
     "legendaryInstalledFilePlaceholder": "/path/to/legendary/installed.json",
     "errors": {
       "legendaryNotInstalled": "> Legendary installed.json not found",
-      "fatalError__i": "> Legendary parser failed with fatal error: \n ${error}"
+      "fatalError__i": "> Legendary parser failed with fatal error:\n ${error}"
+    }
+  },
+  "battleNetParser": {
+    "battleExeOverrideTitle": "Battle.net.exe Path Override",
+    "battleExeOverridePlaceholder": "/path/to/Battle.net/Battle.net.exe",
+    "errors": {
+      "battleNotCompatible": "> Battle.net parser is only available on Windows.",
+      "fatalError__i": "> Battle.net parser failed with fatal error:\n ${error}"
     }
   },
   "UWPParser": {
     "UWPDirTitle": "XboxGames Directory Override",
-
     "UWPDirPlaceholder": "/path/to/XboxGames or /path/to/WindowsApps",
     "UWPLauncherModeTitle": "Launch game as UWP instead of launcher helper",
     "errors": {
       "fatalError__i": "> UWP parser failed with fatal error:\n ${error}",
-      "UWPNotCompatible": "> UWP parser is not compatible in this platform."
+      "UWPNotCompatible": "> UWP parser is only available on Windows."
     }
   },
   "uplayParser": {
@@ -145,6 +158,7 @@
     "galaxyExeOverrideTitle": "Galaxy Path Override",
     "galaxyExeOverridePlaceholder": "/path/to/GalaxyClient.exe",
     "launcherModeInputTitle": "Launch games via GOG Galaxy",
+    "parseLinkedExecsTitle": "Parse linked executables from GOG Galaxy",
     "errors": {
       "invalidGalaxyExeOverride": "> Galaxy Client Override is not a valid path.",
       "fatalError__i": "> GOG Galaxy parser failed with fatal error:\n ${error}",
@@ -233,7 +247,10 @@
     "stylesTitle": "Allowed grid styles",
     "stylesHeroTitle": "Allowed hero styles",
     "stylesLogoTitle": "Allowed logo styles",
-    "stylesIconTitle": "Allowed icon styles"
+    "stylesIconTitle": "Allowed icon styles",
+    "sizesTitle": "Allowed banner dimensions",
+    "sizesHeroTitle": "Allowed hero dimensions",
+    "sizesIconTitle": "Allowed icon dimensions"
   },
   "logger": {
     "component": {
@@ -258,7 +275,7 @@
         "corruptedVariables__i": "Saved custom variables are invalid!\r\nPermanent variable saving is disabled until this issue is resolved.\r\nTry to manually fix errors yourself (file - ${file})\r\nor seek help on github or our official discord channel: ${error}"
       },
       "info": {
-        "downloaded": "Custom variables file has been downloaded."
+        "downloaded": "Custom variables file has been updated."
       }
     }
   },
@@ -271,22 +288,23 @@
         "corruptedVariables__i": "Saved configuration presets are invalid!\r\nPermanent file saving is disabled until this issue is resolved.\r\nTry to manually fix errors yourself (file - ${file})\r\nor seek help on github or our official discord channel: ${error}"
       },
       "info": {
-        "downloaded": "New config presets have been downloaded."
+        "downloaded": "Community presets have been updated."
       }
     }
   },
   "settings": {
     "component": {
       "label": {
-        "general": "General settings",
-        "imageProviders": "Image provider settings",
-        "fuzzy": "Fuzzy matcher settings",
-        "environmentVariables": "Environment variable settings",
-        "communityPresets": "Community variable/preset settings"
+        "general": "General",
+        "imageProviders": "Image Providers",
+        "fuzzy": "Fuzzy Matcher",
+        "environmentVariables": "Environment Variables",
+        "communityPresets": "Community Presets and Custom Variables"
       },
       "text": {
+        "autoUpdate": "Check for updates on start",
         "offlineMode": "Offline mode",
-        "removeApps_desc": "all added app entries and controllers",
+        "removeApps_desc": "all added games and controllers",
         "removeApps_btn": "Remove",
         "preloadImages": "Preload retrieved images immediately",
         "fuzzy_verbose": "Log matching results",
@@ -509,7 +527,7 @@
           "incorrectParser": "Incorrect parser!"
         },
         "romDir__md": "> ROMs directory is invalid!",
-        "userAccounts__md": "> Steam parser requires `User Accounts` field",
+        "userAccounts__md": "> Artwork Only parsers require `User Accounts` field",
         "steamDir__md": "> Steam directory is invalid!",
         "startInDir__md": "> \"Start In\" directory is invalid!",
         "executable__md": "> Executable is invalid!",

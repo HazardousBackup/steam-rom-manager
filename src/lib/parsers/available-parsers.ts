@@ -10,12 +10,14 @@ export const availableParserInputs: Record<ParserType, string[]> = {
   'Amazon Games': ['amazonGamesExeOverride', 'amazonGamesLauncherMode'],
   'Epic': ['epicManifests', 'epicLauncherMode'],
   'Legendary': ['legendaryInstalledFile'],
-  'GOG Galaxy': ['galaxyExeOverride','gogLauncherMode'],
+  'GOG Galaxy': ['galaxyExeOverride','gogLauncherMode','parseLinkedExecs'],
   'itch.io': ['itchIoAppDataOverride','itchIoWindowsOnLinuxInstallDriveRedirect'],
   'Steam': ['onlyGames','onlyInstalled','sourceMods'],
   'UPlay': ['uplayDir','uplayLauncherMode'],
   'UWP': ['UWPDir', 'UWPLauncherMode'],
   'EA Desktop': ['eaGamesDir','eaLauncherMode'],
+  'Battle.net': ['battleExeOverride'],
+  'Non-SRM Shortcuts': [],
   'Raw GOG': []
 };
 
@@ -23,7 +25,7 @@ export const availableParsers: ParserType[] = Object.keys(availableParserInputs)
 
 export const superTypes: Record<SuperType, ParserType[]> = {
   'Manual': ['Manual','Raw GOG'],
-  'ArtworkOnly': ['Steam'],
+  'ArtworkOnly': ['Steam', 'Non-SRM Shortcuts'],
   'ROM': [
     'Glob',
     'Glob-regex'
@@ -36,7 +38,8 @@ export const superTypes: Record<SuperType, ParserType[]> = {
     'UPlay',
     'itch.io',
     'UWP',
-    'EA Desktop'
+    'EA Desktop',
+    'Battle.net'
   ]
 };
 

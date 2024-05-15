@@ -41,6 +41,7 @@ const sharedProperties = {
       }
     },
     imagePool: { type: 'string', default: '${fuzzyTitle}' },
+    drmProtect: { type: 'boolean', default: false },
     defaultImage: {
       type: 'object',
       default: {},
@@ -116,7 +117,34 @@ const sharedProperties = {
                   {type: 'string', enum: providerInfo.SteamGridDB.inputs.imageMotionTypes.allowedValues}
                 ]
               }
-            }
+            },
+            sizes: {
+              type: 'array',
+              default: [] as string[],
+              items: {
+                oneOf: [
+                  {type: 'string', enum: providerInfo.SteamGridDB.inputs.sizes.allowedValues}
+                ]
+              }
+            },
+            sizesHero: {
+              type: 'array',
+              default: [] as string[],
+              items: {
+                oneOf: [
+                  {type: 'string', enum: providerInfo.SteamGridDB.inputs.sizesHero.allowedValues}
+                ]
+              }
+            },
+            sizesIcon: {
+              type: 'array',
+              default: [] as string[],
+              items: {
+                oneOf: [
+                  {type: 'string', enum: providerInfo.SteamGridDB.inputs.sizesIcon.allowedValues}
+                ]
+              }
+            },
           }
         }
       }
@@ -131,6 +159,7 @@ const sharedProperties = {
         replaceDiacritics: { type: 'boolean', default: true }
       }
     },
+    steamInputEnabled: { type: 'string', default: '1', enum: ['0','1','2'] },
     controllers: {
       type: 'object',
       default: {},

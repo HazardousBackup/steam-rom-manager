@@ -105,6 +105,28 @@ export interface languageStruct {
       fatalError__i: string
     }
   },
+  nonSRMShortcutsParser: {
+    docs__md: {
+      self: string[],
+      input: string[]
+    },
+    errors: {
+      noSteamAccounts: string,
+      fatalError__i: string
+    }
+  }
+  battleNetParser: {
+    battleExeOverrideTitle: string,
+    battleExeOverridePlaceholder: string,
+    docs__md: {
+      self: string[],
+      input: string[]
+    },
+    errors: {
+      fatalError__i: string,
+      battleNotCompatible: string
+    }
+  },
   UWPParser: {
     UWPDirTitle: string,
     UWPDirPlaceholder: string,
@@ -222,6 +244,7 @@ export interface languageStruct {
     galaxyExeOverrideTitle: string,
     galaxyExeOverridePlaceholder: string,
     launcherModeInputTitle: string,
+    parseLinkedExecsTitle: string,
     docs__md: {
       self: string[],
       input: string[]
@@ -291,6 +314,9 @@ export interface languageStruct {
     stylesHeroTitle: string,
     stylesLogoTitle: string,
     stylesIconTitle: string,
+    sizesTitle: string,
+    sizesHeroTitle: string,
+    sizesIconTitle: string,
     docs__md: {
       self: string[],
       input: string[]
@@ -353,6 +379,7 @@ export interface languageStruct {
       },
       text: {
         offlineMode: string,
+        autoUpdate: string,
         removeApps_desc: string,
         removeApps_btn: string,
         preloadImages: string,

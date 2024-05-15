@@ -1,39 +1,40 @@
-import { VDF_ListData } from "../../../models";
+import { userAccountData, VDF_ListData } from "../../../models";
 import { VDF_AddedItemsFile } from "../../vdf-added-items-file";
 import { VDF_ScreenshotsFile } from "../../vdf-screenshots-file";
 import { VDF_ShortcutsFile } from "../../vdf-shortcuts-file";
 import { APP } from "../../../variables";
 import * as paths from "../../../paths";
-import { glob } from 'glob';
 import * as path from 'path';
+import { getAvailableLogins } from "../steam";
 
 export function generateListFromDirectoryList(steamDirectories: string[]) {
   let retrieveMultipleVDFPaths = function (steamDirectories: string[]) {
-    let promises: Promise<{ data: { directory: string, users: { id: string, paths: string[] }[] }, error: string }>[] = [];
-    for (let i = 0; i < steamDirectories.length; i++) {
-      promises.push(new Promise<{ data: { directory: string, users: { id: string, paths: string[] }[] }, error: string }>((resolve, reject) => {
-        glob('userdata/+([0-9])/', { dot: true, cwd: steamDirectories[i] }).then((folders: string[]) => {
-          if (folders.length === 0) {
-            resolve({ data: null, error: APP.lang.helpers.error.noUserIdsInDir__i.interpolate({ steamDirectory: steamDirectories[i] }) });
-          }
+    let promises: Promise<{ data: { directory: string, users: { id: string, paths: {[k: string]: string} }[] }, error: string }>[] = [];
+    for (let steamDirectory of steamDirectories) {
+      promises.push(new Promise<{ data: { directory: string, users: { id: string, paths: {[k: string]: string} }[] }, error: string }>((resolve, reject) => {
+        getAvailableLogins(steamDirectory).then((userAccounts: userAccountData[]) => {
+          if (userAccounts.length === 0) {
+            resolve({ data: null, error: APP.lang.helpers.error.noUserIdsInDir__i.interpolate({ steamDirectory: steamDirectory }) });
+          }           
           else {
-            let users: { id: string, paths: string[] }[] = [];
-            for (let j = 0; j < folders.length; j++) {
-                users.push({
-                id: folders[j].split(path.sep).slice(-1)[0],
-                paths: [
-                  path.join(steamDirectories[i], folders[j], 'config', paths.savedListFilename),
-                  path.join(steamDirectories[i], folders[j], '760', 'screenshots.vdf'),
-                  path.join(steamDirectories[i], folders[j], 'config', 'grid'),
-                  path.join(steamDirectories[i], folders[j], 'config', 'shortcuts.vdf')
-                ]
+            let users: { id: string, paths: {[k: string]: string} }[] = [];
+            for (let userAccount of userAccounts) {
+              const accountDir = path.join(steamDirectory,'userdata',userAccount.accountID)
+              users.push({
+                id: userAccount.accountID,
+                paths: {
+                  addedItems: path.join(accountDir, 'config', paths.savedListFilename),
+                  screenshots: path.join(accountDir, '760', 'screenshots.vdf'),
+                  grid: path.join(accountDir, 'config', 'grid'),
+                  shortcuts: path.join(accountDir, 'config', 'shortcuts.vdf')
+                }
               });
             }
-            resolve({ data: { directory: steamDirectories[i], users }, error: null });
+            resolve({ data: { directory: steamDirectory, users }, error: null });
           }
-        }).catch((err: string)=> {
-          reject(err);
-        });
+        }).catch((err: string) => {
+          reject(err)
+        })
       }));
     }
     return Promise.all(promises);
@@ -59,12 +60,12 @@ export function generateListFromDirectoryList(steamDirectories: string[]) {
           if (vdfData[directory][user.id] === undefined) {
             numberOfGeneratedEntries++;
             vdfData[directory][user.id] = {
-              addedItems: new VDF_AddedItemsFile(user.paths[0]),
+              addedItems: new VDF_AddedItemsFile(user.paths.addedItems),
               screenshots: new VDF_ScreenshotsFile(
-                path.join(user.paths[1]),
-                path.join(user.paths[2])
+                path.join(user.paths.screenshots),
+                path.join(user.paths.grid)
               ),
-              shortcuts: new VDF_ShortcutsFile(user.paths[3])
+              shortcuts: new VDF_ShortcutsFile(user.paths.shortcuts)
             };
           }
         }

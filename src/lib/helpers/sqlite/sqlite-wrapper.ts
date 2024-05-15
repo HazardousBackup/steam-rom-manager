@@ -6,10 +6,12 @@ import * as path from 'path';
 export class SqliteWrapper {
   private dbPath;
   private task;
+  private options;
 
-  constructor(task: string, dbPath: string) {
+  constructor(task: string, dbPath: string, options?: {[k: string]: any}) {
     this.dbPath = dbPath;
     this.task = task;
+    this.options = options;
   }
 
   // Work-around for calling fork inside a packed application
@@ -24,19 +26,22 @@ export class SqliteWrapper {
         workerPath = 'workers/sqlite-worker.js'
         cwd = null;
       }
-      const sqliteWorker = fork(workerPath, [], {
-        cwd: cwd
-      })
-      sqliteWorker.on('message', (data: {[k: string]: any}) => {
-        if (data.type === 'error') {
-          reject(data.error);
-        }
-        else if (data.type === 'result') {
-          resolve(data.result);
-        }
-      })
-      sqliteWorker.send({task: this.task, dbPath: this.dbPath})
-      // TODO: this could never resolve on error
+      try {
+        const sqliteWorker = fork(workerPath, [], {
+          cwd: cwd
+        })
+        sqliteWorker.on('message', (data: {[k: string]: any}) => {
+          if (data.type === 'error') {
+            reject(data.error);
+          }
+          else if (data.type === 'result') {
+            resolve(data.result);
+          }
+        })
+        sqliteWorker.send({task: this.task, dbPath: this.dbPath, options: this.options})
+      } catch(error) {
+        reject(error)
+      }
     })
   }
 }

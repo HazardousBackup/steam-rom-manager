@@ -41,8 +41,9 @@ export const appSettings = {
       properties: {
         retrieveCurrentSteamImages: { type: 'boolean', default: true },
         deleteDisabledShortcuts: { type: 'boolean', default: false },
-        imageZoomPercentage: { type: 'number', default: 40, minimum: 30, maximum: 100 },
+        imageZoomPercentage: { type: "number", default: 30, minimum: 10, maximum: 100 },
         preload: { type: 'boolean', default: false },
+        hideUserAccount: { type: 'boolean', default: false}
       }
     },
     enabledProviders: {
@@ -60,6 +61,8 @@ export const appSettings = {
     batchDownloadSize: { type: 'number', default: 50 },
     language: { type: 'string', default: languageManager.getDefaultLanguage(), enum: languageManager.getAvailableLanguages() },
     theme: {type:'string', default: 'Deck', enum: availableThemes},
+    emudeckInstall: {type: 'boolean', default: false},
+    autoUpdate: {type: 'boolean', default: true},
     offlineMode: { type: 'boolean', default: false },
     navigationWidth: { type: 'number', default: 0 },
     clearLogOnTest: { type: 'boolean', default: false }

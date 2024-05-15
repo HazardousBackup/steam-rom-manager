@@ -6,7 +6,7 @@ import { PreviewData, PreviewDataApp, PreviewDataApps, PreviewVariables, AppSett
 import { APP } from '../../variables';
 import { FileSelector } from '../../lib';
 import { artworkTypes, artworkViewTypes, artworkNamesDict, artworkDimsDict } from '../../lib/artwork-types';
-import { superTypes, ArtworkOnlyType } from '../../lib/parsers/available-parsers';
+import { superTypes, ArtworkOnlyType, superTypesMap } from '../../lib/parsers/available-parsers';
 import { FuzzyTestPipe, IntersectionTestPipe } from '../pipes';
 import * as url from '../../lib/helpers/url';
 import * as FileSaver from 'file-saver';
@@ -14,6 +14,7 @@ import * as appImage from '../../lib/helpers/app-image';
 import * as steam from '../../lib/helpers/steam';
 import * as _ from 'lodash';
 import * as path from 'path';
+import { getCurrentImage } from '../../lib/helpers/app-image';
 
 @Component({
   selector: 'preview',
@@ -26,6 +27,8 @@ export class PreviewComponent implements OnDestroy {
   private appSettings: AppSettings;
   private subscriptions: Subscription = new Subscription();
   private previewVariables: PreviewVariables;
+  private missingArtFilter: boolean = false;
+  private showFilters: boolean = false;
   private filterValue: string = '';
   private categoryFilter: string[] = [];
   private allCategories: string[] = [];
@@ -184,6 +187,7 @@ export class PreviewComponent implements OnDestroy {
   private setImageType(imageType: string) {
     this.previewService.setImageType(imageType);
     this.setImageBoxSizes();
+    this.changeDetectionRef.detectChanges();
   }
 
   private getImagePool(poolKey: string, imageType?: string) {
@@ -255,7 +259,7 @@ export class PreviewComponent implements OnDestroy {
   private addLocalImages(app: PreviewDataApp, imageType?: string) {
     this.fileSelector.multiple = true;
     this.fileSelector.accept = '.png, .jpeg, .jpg, .tga, .webp';
-    if(this.previewService.getImageType()!='games') {
+    if(this.previewService.getImageType() != 'games') {
       imageType=this.previewService.getImageType()
     }
     this.fileSelector.onChange = (target) => {
@@ -265,10 +269,11 @@ export class PreviewComponent implements OnDestroy {
           if (extRegex.test(path.extname(target.files[i].path))) {
             let imageUrl = url.encodeFile(target.files[i].path);
             this.previewService.addUniqueImage(app.images[imageType].imagePool, {
-              imageProvider: 'LocalStorage',
+              imageProvider: 'ManuallyAdded',
               imageUrl: imageUrl,
               loadStatus: 'done'
             }, imageType);
+            this.previewService.setImageIndex(app, this.previewService.getTotalLengthOfImages(app, imageType, true) -1, imageType, true);
           }
         }
       }
@@ -301,6 +306,23 @@ export class PreviewComponent implements OnDestroy {
         this.previewService.clearPreviewData();
     });
   }
+
+  private toggleFilters() {
+    if(this.showFilters) {
+      this.showFilters = false;
+      this.renderer.setStyle(this.elementRef.nativeElement,'--filters-width','0%',RendererStyleFlags2.DashCase);
+    } else {
+      this.showFilters = true;
+      this.renderer.setStyle(this.elementRef.nativeElement, '--filters-width', '300px', RendererStyleFlags2.DashCase);
+    }
+    this.changeDetectionRef.detectChanges();
+  }
+
+  private setArtFilter(artFilter: boolean) {
+    this.missingArtFilter = artFilter;
+    this.changeDetectionRef.detectChanges();
+  }
+
   private searchMatches(searchTitle: string) {
     this.previewService.getMatchFixes(searchTitle).then((games: any[])=>{
       this.matchFixDict = Object.fromEntries(games.map((x: any)=>[x.id.toString(), {name: x.name, posterUrl: x.posterUrl}]));
@@ -319,6 +341,7 @@ export class PreviewComponent implements OnDestroy {
     this.showDetails= true;
     this.matchFix = '';
     this.renderer.setStyle(this.elementRef.nativeElement, '--details-width', '50%', RendererStyleFlags2.DashCase);
+    this.changeDetectionRef.detectChanges()
     this.detailsApp = {
       appId: appId,
       app: app,
@@ -344,7 +367,7 @@ export class PreviewComponent implements OnDestroy {
     if(this.detailsApp && this.matchFix) {
       const {steamDirectory, userId, appId, app} = this.detailsApp;
       this.previewData[steamDirectory][userId].apps[appId].title = this.matchFixDict[this.matchFix].name;
-      if(app.parserType !== 'Steam') {
+      if(superTypesMap[app.parserType] !== 'ArtworkOnly') {
         const changedId = steam.generateAppId(app.executableLocation, this.matchFixDict[this.matchFix].name);
         this.previewData[steamDirectory][userId].apps[appId].changedId = changedId;
       }
@@ -369,7 +392,13 @@ export class PreviewComponent implements OnDestroy {
         exclude: false,
         excludeArtwork: false
       })
-      this.refreshImages(this.previewData[steamDirectory][userId].apps[appId]);
+      if(this.previewService.getImageType()=='games') { 
+        for(const artworkType of artworkTypes) {
+          this.refreshImages(this.previewData[steamDirectory][userId].apps[appId], artworkType)
+        }
+      } else {
+        this.refreshImages(this.previewData[steamDirectory][userId].apps[appId]);
+      }
       this.closeDetails();
     }
   }
@@ -403,7 +432,19 @@ export class PreviewComponent implements OnDestroy {
     const searchFilter = this.fuzzyTest.transform(app.title, this.filterValue);
     const categoryFilter = this.intersectionTest.transform(app.steamCategories, this.actualCategoryFilter);
     const configFilter = this.intersectionTest.transform([app.configurationTitle], this.actualParserFilter);
-    return searchFilter && categoryFilter && configFilter;
+    let missingArtFilter;
+    const imageType = this.previewService.getImageType();
+    if(!this.missingArtFilter) {
+      missingArtFilter = true;
+    } else {
+      if(imageType=='games') {
+        missingArtFilter = artworkTypes.map(t=> !this.previewService.getCurrentImage(app,t)).reduce((x,y)=>x||y);
+      } else {
+        missingArtFilter = !this.previewService.getCurrentImage(app)
+      }
+    }
+    const excludesArtOnlyFilter = !this.showExcludes || superTypesMap[app.parserType]!=='ArtworkOnly'
+    return searchFilter && categoryFilter && configFilter && missingArtFilter && excludesArtOnlyFilter;
   }
 
   private excludeVisible() {
@@ -454,7 +495,6 @@ export class PreviewComponent implements OnDestroy {
               return `${app.extractedTitle} \$\{id:${exceptionId}\}`
             });
             exceptionKeys = exceptionKeys.concat(newKeys)
-
             this.previewData[steamDirectory][userId].apps = _.pickBy(this.previewData[steamDirectory][userId].apps, (value: PreviewDataApp, key: string) => {
               return !this.excludedAppIds[steamDirectory][userId][key]
             })

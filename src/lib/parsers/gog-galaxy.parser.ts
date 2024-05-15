@@ -2,10 +2,8 @@ import { ParserInfo, GenericParser, ParsedData } from '../../models';
 import { APP } from '../../variables';
 import * as _ from "lodash";
 import * as fs from "fs-extra";
-import * as genericParser from '@node-steam/vdf';
 import * as path from "path";
 import * as os from "os";
-import * as json from "../helpers/json";
 import { SqliteWrapper } from "../helpers/sqlite";
 
 export class GOGParser implements GenericParser {
@@ -29,17 +27,20 @@ export class GOGParser implements GenericParser {
           label: this.lang.launcherModeInputTitle,
           inputType: 'toggle',
           validationFn: (input: any)=>{ return null },
-            info: this.lang.docs__md.input.join('')
+          info: this.lang.docs__md.input.join('')
+        },
+        'parseLinkedExecs': {
+          label: this.lang.parseLinkedExecsTitle,
+          inputType: 'toggle',
+          validationFn: (input: any) => { return null },
+          info: this.lang.docs__md.input.join('')
         }
       }
     };
   }
 
   execute(directories: string[], inputs: { [key: string]: any }, cache?: { [key: string]: any }) {
-    return new Promise<ParsedData>((resolve,reject)=>{
-      let appTitles: string[] = [];
-      let appPaths: string[] = [];
-      let productIds: string[] = [];
+    return new Promise<ParsedData>(async (resolve,reject)=>{
       let dbPath: string = '';
       let galaxyExePath = inputs.galaxyExeOverride || 'C:\\Program Files (x86)\\GOG Galaxy\\GalaxyClient.exe';
 
@@ -51,33 +52,28 @@ export class GOGParser implements GenericParser {
       if(!fs.existsSync(dbPath)) {
         return reject(this.lang.errors.gogNotInstalled);
       }
-
-      const sqliteWrapper = new SqliteWrapper('gog-galaxy', dbPath);
-      sqliteWrapper.callWorker()
-      .then((playtasks: {[k: string]: any}[]) => {
-        for(let task of playtasks) {
-          if(task.title && task.params.executablePath) {
-            appTitles.push(task.title);
-            productIds.push(task.productId.toString())
-            appPaths.push(task.params.commandLineArgs ? task.params.executablePath+' '+task.params.commandLineArgs : task.params.executablePath)
-          }
-        }
-      })
-      .then(()=>{
+      try {
+        const sqliteWrapper = new SqliteWrapper('gog-galaxy', dbPath, {externals: !!inputs.parseLinkedExecs});
+        const playtasks = await sqliteWrapper.callWorker() as any[];
         let parsedData: ParsedData = {success: [], failed:[]};
         parsedData.executableLocation = galaxyExePath;
-        for(let i=0; i < appTitles.length; i++){
-          parsedData.success.push({
-            extractedTitle: appTitles[i],
-            extractedAppId: productIds[i],
-            launchOptions: `/command=runGame /gameId=${productIds[i]}`,
-              filePath: appPaths[i]
-          });
+        for(let task of playtasks) {
+          if(task.params.executablePath) {
+            const productID = task.productId.toString();
+            parsedData.success.push({
+              extractedTitle: task.title || path.dirname(task.params.executablePath).split(path.sep).pop(),
+              extractedAppId: productID,
+              launchOptions: `/command=runGame /gameId=${productID}`,
+              filePath: task.params.executablePath,
+              fileLaunchOptions: task.params.commandLineArgs
+            })
+          }
         }
         resolve(parsedData);
-      }).catch((err)=>{
-        return reject(this.lang.errors.fatalError__i.interpolate({error: err}));
-      });
-    })
+      }
+      catch(err) {
+        reject(this.lang.errors.fatalError__i.interpolate({error: err}));
+      };
+    });
   }
 }

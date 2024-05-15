@@ -89,6 +89,7 @@ export class ItchIoParser implements GenericParser {
             return {
               extractedTitle: title,
               filePath: filePath,
+              //fileLaunchOptions: not available
             };
           })
           .filter((gameDetails:any) => gameDetails !== null);

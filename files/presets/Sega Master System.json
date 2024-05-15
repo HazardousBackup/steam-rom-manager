@@ -39,7 +39,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -76,7 +76,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Sega Master System - Retroarch(Flatpak) - Gearsystem": {
 		"parserType": "Glob",
@@ -118,7 +120,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -155,7 +157,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Sega Master System - Retroarch - Genesis Plus GX": {
 		"parserType": "Glob",
@@ -197,7 +201,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -234,7 +238,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Sega Master System - Retroarch(Flatpak) - Genesis Plus GX": {
 		"parserType": "Glob",
@@ -276,7 +282,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -313,7 +319,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Sega Master System - Retroarch - PicoDrive": {
 		"parserType": "Glob",
@@ -355,7 +363,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -392,7 +400,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Sega Master System - Retroarch(Flatpak) - PicoDrive": {
 		"parserType": "Glob",
@@ -434,7 +444,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -471,6 +481,8 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	}
 }

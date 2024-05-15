@@ -52,30 +52,45 @@
 			"SteamGridDB": {
 				"nsfw": false,
 				"humor": false,
+				"imageMotionTypes": [
+					"static"
+				],
 				"styles": [],
 				"stylesHero": [],
 				"stylesLogo": [],
-				"stylesIcon": [],
-				"imageMotionTypes": [
-					"static"
-				]
+				"stylesIcon": []
 			}
 		},
+		"presetVersion": 9,
 		"defaultImage": {
+			"long": {
+				"tall": "",
+				"long": "",
+				"hero": "",
+				"logo": "",
+				"icon": ""
+			},
 			"tall": "",
-			"long": "",
 			"hero": "",
 			"logo": "",
 			"icon": ""
 		},
 		"localImages": {
+			"long": {
+				"tall": "",
+				"long": "",
+				"hero": "",
+				"logo": "",
+				"icon": ""
+			},
 			"tall": "",
-			"long": "",
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
 		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
+	},
 	"Nintendo Pokemon Mini - Retroarch - Pokemini": {
 		"parserType": "Glob",
 		"configTitle": "Pokemon Mini - Retroarch - Pokemini",
@@ -129,28 +144,43 @@
 			"SteamGridDB": {
 				"nsfw": false,
 				"humor": false,
+				"imageMotionTypes": [
+					"static"
+				],
 				"styles": [],
 				"stylesHero": [],
 				"stylesLogo": [],
-				"stylesIcon": [],
-				"imageMotionTypes": [
-					"static"
-				]
+				"stylesIcon": []
 			}
 		},
+		"presetVersion": 9,
 		"defaultImage": {
+			"long": {
+				"tall": "",
+				"long": "",
+				"hero": "",
+				"logo": "",
+				"icon": ""
+			},
 			"tall": "",
-			"long": "",
 			"hero": "",
 			"logo": "",
 			"icon": ""
 		},
 		"localImages": {
+			"long": {
+				"tall": "",
+				"long": "",
+				"hero": "",
+				"logo": "",
+				"icon": ""
+			},
 			"tall": "",
-			"long": "",
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	}
 }

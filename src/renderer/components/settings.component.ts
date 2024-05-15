@@ -1,12 +1,17 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SettingsService, ParsersService, PreviewService, LanguageService, ImageProviderService, FuzzyService, CustomVariablesService, ConfigurationPresetsService, IpcService } from "../services";
+import { SettingsService, ParsersService, PreviewService, LanguageService, ImageProviderService, FuzzyService, CustomVariablesService, ConfigurationPresetsService, ShellScriptsService, IpcService, LoggerService } from "../services";
 import { APP } from '../../variables';
 import { AppSettings, SelectItem, userAccountData } from "../../models";
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { availableThemes } from "../../lib/themes";
 import * as os from 'os';
 import * as steam from "../../lib/helpers/steam";
+import { ArtworkCache } from '../../lib';
+import { fstat } from 'fs';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as paths from '../../paths';
 
 @Component({
   selector: 'settings',
@@ -30,15 +35,18 @@ export class SettingsComponent implements OnDestroy {
   private localImagesDirectoryPlaceholder: string;
   private raCoresDirectoryPlaceholder: string;
   private chooseUserAccountsVisible: boolean = false;
+  private showShellScripts: boolean = false;
   private CLI_MESSAGE: BehaviorSubject<string> = new BehaviorSubject("");
   constructor(private settingsService: SettingsService,
     private fuzzyService: FuzzyService,
     private languageService: LanguageService,
+    private loggerService: LoggerService,
     private imageProviderService: ImageProviderService,
     private previewService: PreviewService,
     private parsersService: ParsersService,
     private cpService: ConfigurationPresetsService,
     private cvService: CustomVariablesService,
+    private ssService: ShellScriptsService,
     private changeDetectionRef: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
     private ipcService: IpcService
@@ -73,6 +81,7 @@ export class SettingsComponent implements OnDestroy {
     this.themes = availableThemes;
     this.userAccountsPlaceholder = this.lang.placeholder.userAccounts;
     if(os.type()=='Windows_NT'){
+      this.showShellScripts = true;
       this.retroarchPathPlaceholder = this.lang.placeholder.retroarchPathWin;
       this.steamDirectoryPlaceholder = this.lang.placeholder.steamDirectoryWin;
       this.romsDirectoryPlaceholder = this.lang.placeholder.romsDirectoryWin;
@@ -121,6 +130,21 @@ export class SettingsComponent implements OnDestroy {
       this.settingsService.settingsChanged();
 
     this.settingsService.saveAppSettings();
+  }
+
+  private async nukeArtworkChoices() {
+    const artworkCache = new ArtworkCache();
+    await artworkCache.read();
+    await artworkCache.emptyCache();
+    this.loggerService.info('Emptied artwork cache.', {invokeAlert: true, alertTimeout: 3000})
+  }
+
+  private nukeArtworkBackups() {
+    const backupsDir = path.join(paths.userDataDir,'artworkBackups');
+    if(fs.existsSync(backupsDir)) {
+      fs.rmSync(backupsDir, { recursive: true, force: true });
+    }
+    this.loggerService.info('Nuked artwork backups.', {invokeAlert: true, alertTimeout: 3000})
   }
 
   private removeApps() {

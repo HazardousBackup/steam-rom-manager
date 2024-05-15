@@ -1,6 +1,117 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 2.5.0
+### Added
+* Ability to set Proton version per parser [TODO]
+* Ability to prioritize artwork by certain authors [TODO]
+
+### Changed
+* Allow function variables in environment variable fields. One use case being to set start-in-directory based on the os ([issue 292](https://github.com/SteamGridDB/steam-rom-manager/issues/292)).
+* Added back image provider to apps in EmuDeck theme.
+* View Games and About pages now in EmuDeck theme.
+
+### Fixed
+* Some graphical issues with loading spinner placements
+
+## 2.4.29
+### Added
+* Non-SRM Shortcuts Artwork Only Parser.
+### Changed
+* Don't show artwork only apps when doing excludes (this didn't work anyway, since nothing is being added).
+
+## 2.4.28
+### Added
+* Parsing of executable arguments in executable mode for GOG, Amazon, Epic, EA Desktop, and Legendary (resolves [issue 263](https://github.com/SteamGridDB/steam-rom-manager/issues/263)). Previously these were being ignored. As far as I can tell UPlay, UWP, and Itch.io never pass commandline arguments to executables.
+
+### Fixed
+* Read controller templates blocking renderer process. Should fix the issue some people have had with SRM freezing when hitting save to steam.
+* Possible error when writing localconfig.vdf to enable/disable steam input.
+
+
+## 2.4.27
+### Added
+* Ability to filter by artwork size for banners, heroes, and icons.
+* Ability to sort exceptions by date, old title, and new title ([issue 343](https://github.com/SteamGridDB/steam-rom-manager/issues/343))
+* Option to hide steam username from preview.
+### Fixed
+* Some newer titles missing from Battle.net parser (thanks @doZennn)
+### Changed
+* Hide API options for SteamGridDB if it isn't selected as an image provider.
+
+## 2.4.26
+### Added
+* Battle.net parser ⚔️🔥 ([issue 352](https://github.com/SteamGridDB/steam-rom-manager/issues/352))
+
+## 2.4.25
+### Added
+* Toggle to filter by apps missing artwork (resolves [issue 407](https://github.com/SteamGridDB/steam-rom-manager/issues/407))
+### Fixed
+* Renderer blocking when running XBox UWP parser
+### Changed
+* Filter out DMCA'd artwork.
+* Split custom variables file ([issue 260](https://github.com/SteamGridDB/steam-rom-manager/issues/260)). Thanks @kencinder.
+* Moved filters for preview page into a side panel.
+* Automatically download new custom variables on startup.
+
+## 2.4.24
+### Added
+* Toggle in settings to disable auto update ([issue 612](https://github.com/SteamGridDB/steam-rom-manager/issues/612))
+* Capability to add EmuDeck specific features.
+
+### Fixed
+* Renderer blocking when removing extraneous artwork (should resolve many performance issues when large number of ROMs are being handled)
+* Possible failure to load of `View Games` page if `userdata/0` folder present.
+* Flatpak build process working again
+
+## 2.4.23
+### Added
+* Support for Xbox One Elite, PS5 Dualsense Edge, and Steam Controller templates (resolves [issue 555](https://github.com/SteamGridDB/steam-rom-manager/issues/555) and [issue 656](https://github.com/SteamGridDB/steam-rom-manager/issues/656))
+### Fixed
+* Glob and Glob-Regex parser would fail if roms directory was set to the root of a drive on windows. ([issue 580](https://github.com/SteamGridDB/steam-rom-manager/issues/580))
+
+
+## 2.4.22
+### Fixed
+* Regression introduced in 2.4.20 resulting in `ENOENT` errors
+
+## 2.4.21
+### Added
+* SRM now remembers your sgdb artwork choices (caching sgdbId -> artworkId). It will remember these choices even if you delete your `config/grids` folder or if you change a game's app id.
+* Artwork choices are stored in SRM's config directory under `artworkCache.json`. Moving this file to a new SRM install will instantly reproduce your artwork choices.
+* Per parser option to backup SGDB artwork locally. Useful for parsers that experience frequent DRM takedowns. 
+* Artwork backups are stored in SRM's config directory under `artworkBackups/`. Moving this directory to a new SRM install will allow use of the backed up artwork.
+
+### Changed
+* SRM will now always list artwork in the same order: First whatever is currently in steam if available, then local artwork if available, then the cached sgdb image if available, then other sgdb images.
+
+
+## 2.4.20
+### Added
+* Ability to Enable/Disable steam input per parser ([a much requested feature](https://github.com/SteamGridDB/steam-rom-manager/issues/562))
+* Ability to set `appendArgsToExecutable` from manual parser (resolves [issue 625](https://github.com/SteamGridDB/steam-rom-manager/issues/625))
+* Controller Template information on View Games page.
+### Fixed
+* Create `grid` directory in Steam if it does not already exist (resolves [issue 600](https://github.com/SteamGridDB/steam-rom-manager/issues/600))
+
+
+## 2.4.19
+### Added
+* Ability to search games on view games page
+### Fixed
+* Styling regression on "all artwork" view in non-EmuDeck themes
+* Titles with LaunchOptions not launching from View Games page
+* Regression that prevented fix match from working on "all artwork" view.
+
+## 2.4.18
+### Added
+* View Games page, ability to see what artwork and games are currently in steam without opening steam
+* `Parse Linked Execs` toggle for GOG Galaxy parser, allowing the parsing of games that were not purchased in GOG but instead manually linked.
+* Many changes to the EmuDeck theme, thanks to @dragoonDorise
+
+### Fixed
+* `EISDIR` upon refresh controller templates if steam had created a directory in the controller templates folder (thanks @SteelSavant)
+
 ## 2.4.17
 ### Fixed
 * Fuzzy game name matching

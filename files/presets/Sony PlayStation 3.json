@@ -39,7 +39,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -76,7 +76,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Sony PlayStation 3 - RPCS3(Flatpak) (Extracted ISO)": {
 		"parserType": "Glob",
@@ -118,7 +120,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -155,7 +157,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Sony PlayStation 3 - RPCS3 (Installed PKG)": {
 		"parserType": "Glob",
@@ -197,7 +201,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -234,7 +238,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Sony PlayStation 3 - RPCS3(Flatpak) (Installed PKG)": {
 		"parserType": "Glob",
@@ -276,7 +282,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -313,6 +319,8 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	}
 }

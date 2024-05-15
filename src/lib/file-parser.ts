@@ -16,6 +16,7 @@ import * as os from 'os';
 import { glob, escape } from 'glob';
 import { getPath, getArgs, getStartDir } from 'windows-shortcuts-ps';
 import * as xdgparse from 'xdg-parse';
+import { SteamGridDbProvider } from './image-providers/steamgriddb.worker';
 
 
 
@@ -59,7 +60,8 @@ export class FileParser {
         .then(this.shortcutsPromise.bind(this))
         .then(this.appendArgsPromise.bind(this))
         .then(this.userExceptionsPromise.bind(this))
-        .then(this.imagesPromise.bind(this)) as Promise<ParsedUserConfiguration>
+        .then(this.imagesPromise.bind(this)) 
+        .then(this.backedUpLocalImagesPromise.bind(this)) as Promise<ParsedUserConfiguration>
       )
     }
     return Promise.all(configPromises).then((parsedConfigs: ParsedUserConfiguration[])=>{
@@ -221,10 +223,11 @@ export class FileParser {
           configurationTitle: config.configTitle,
           parserId: config.parserId,
           parserType: config.parserType,
-          appendArgsToExecutable: superType === parserInfo.ROMType ? config.executable.appendArgsToExecutable: false,
           shortcutPassthrough: config.executable.shortcutPassthrough,
           imageProviders: config.imageProviders,
+          drmProtect: config.drmProtect,
           imageProviderAPIs: config.imageProviderAPIs,
+          steamInputEnabled: config.steamInputEnabled,
           controllers: config.controllers,
           foundUserAccounts: filteredAccounts.found,
           missingUserAccounts: filteredAccounts.missing,
@@ -251,6 +254,7 @@ export class FileParser {
           || config.parserInputs.uplayLauncherMode
           || config.parserInputs.UWPLauncherMode
           || config.parserInputs.eaLauncherMode
+          || config.parserType==='Battle.net'
         );
         for(let j = 0; j < data.success.length; j++) {
           let fuzzyTitle = data.success[j].fuzzyTitle || data.success[j].extractedTitle;
@@ -263,14 +267,17 @@ export class FileParser {
 
           let executableLocation:string = undefined;
           let startInDir:string = undefined;
+          let appendArgsToExecutable:boolean = undefined;
 
           if (superType === parserInfo.ManualType) {
             executableLocation = data.success[j].filePath;
             startInDir = data.success[j].startInDirectory || path.dirname(executableLocation);
+            appendArgsToExecutable = data.success[j].appendArgsToExecutable;
           }
           else if(superType === parserInfo.ROMType) {
             executableLocation = config.executable.path || data.success[j].filePath;
             startInDir = config.startInDirectory || path.dirname(executableLocation);
+            appendArgsToExecutable = config.executable.appendArgsToExecutable;
           }
           else if(superType === parserInfo.PlatformType) {
             if(launcherMode) {
@@ -279,10 +286,12 @@ export class FileParser {
               executableLocation = data.success[j].filePath;
             }
             startInDir = data.success[j].startInDirectory || path.dirname(data.success[j].filePath);
+            appendArgsToExecutable = false;
           }
           else if(superType === parserInfo.ArtworkOnlyType) {
             executableLocation = data.success[j].extractedAppId;
             startInDir = '';
+            appendArgsToExecutable = false;
           }
 
           let newFile: ParsedUserConfigurationFile = {
@@ -291,6 +300,7 @@ export class FileParser {
             modifiedExecutableLocation: undefined,
             startInDirectory: startInDir||'',
             argumentString: undefined,
+            appendArgsToExecutable: appendArgsToExecutable,
             resolvedLocalImages: Object.fromEntries(artworkTypes.map((artworkType) => [artworkType,[]])),
             resolvedDefaultImages: Object.fromEntries(artworkTypes.map((artworkType) => [artworkType,[]])),
             defaultImage: Object.fromEntries(artworkTypes.map((artworkType: string) => [artworkType, undefined])),
@@ -320,7 +330,7 @@ export class FileParser {
             }) : '';
           }
           else if (superType === parserInfo.PlatformType) {
-            newFile.argumentString = launcherMode ? data.success[j].launchOptions || '' : '';
+            newFile.argumentString = launcherMode ? data.success[j].launchOptions || '' : data.success[j].fileLaunchOptions||'';
           }
           else if (superType === parserInfo.ArtworkOnlyType) {
             newFile.argumentString = '';
@@ -412,7 +422,7 @@ export class FileParser {
     return new Promise((resolve, reject)=>{
       try{
         for(let j=0; j < parsedConfig.files.length; j++) {
-          if(config.executable.appendArgsToExecutable) {
+          if(parsedConfig.files[j].appendArgsToExecutable) {
             parsedConfig.files[j].modifiedExecutableLocation = `${parsedConfig.files[j].modifiedExecutableLocation} ${parsedConfig.files[j].argumentString}`;
             parsedConfig.files[j].argumentString = '';
           }
@@ -520,6 +530,37 @@ export class FileParser {
       }
     })
   }
+  private backedUpLocalImagesPromise(parsedConfig: ParsedUserConfiguration) {
+    return new Promise((resolve, reject)=>{
+      try {
+        let backedupPromises: Promise<void>[] = [];
+        if(parsedConfig.drmProtect) {
+          for(let j=0; j < parsedConfig.files.length; j++) {
+            const finalTitle = parsedConfig.files[j].finalTitle;
+            for(const artworkType of artworkTypes) {
+              if(parsedConfig.files[j].onlineImageQueries.length) {
+                backedupPromises.push(SteamGridDbProvider.retrieveIdsFromTitle(parsedConfig.files[j].onlineImageQueries[0]).then((possibleGameIds: number[])=>{
+                  if(possibleGameIds.length) {
+                      const backupDir = path.join(paths.userDataDir,'artworkBackups', artworkType);
+                      return glob(`${possibleGameIds[0]}.*`, {dot: true, cwd: backupDir, absolute: true}).then((localBackups: string[])=>{
+                        for(let localBackup of localBackups) {
+                          parsedConfig.files[j].localImages[artworkType].unshift(url.encodeFile(localBackup))
+                        }
+                      });
+                    }
+                  }))
+              }
+            }
+          }
+        }
+        Promise.all(backedupPromises).then(()=>{
+          resolve(parsedConfig)
+        })
+      } catch(e) {
+        reject(`Backed up images step for "${parsedConfig.configurationTitle}":\n ${e}`)
+      }
+    })
+  }
 
   private tryToReplaceTitlesWithVariables(data: ParsedDataWithFuzzy, config: UserConfiguration, vParser: VariableParser) {
     let groups = undefined;
@@ -609,6 +650,71 @@ export class FileParser {
     });
   }
 
+  execRegex(output: string) {
+    let match = /^\/(.*?)\/([giu]{0,3})\|(.*?)(?:\|(.*?))?$/.exec(output);
+    if (match) {
+      let regex = new RegExp(match[1], match[2] || '');
+      let replaceText = match[4];
+      if (typeof replaceText === 'string') {
+        return match[3].replace(regex, replaceText);
+      }
+      else {
+        let innerMatch = match[3].match(regex);
+        let regexOutput = '';
+        if (innerMatch !== null) {
+          for (let i = 1; i < innerMatch.length; i++) {
+            if (innerMatch[i]) {
+              regexOutput += innerMatch[i];
+            }
+          }
+          if (regexOutput.length === 0) {
+            regexOutput = innerMatch[0];
+          }
+        }
+        return regexOutput
+      }
+    }
+
+    match = /^uc\|(.*)$/i.exec(output);
+    if (match) {
+      return match[1].toUpperCase();
+    }
+
+    match = /^lc\|(.*)$/i.exec(output);
+    if (match) {
+      return match[1].toLowerCase();
+    }
+
+    match = /^rdc\|(.*)$/i.exec(output);
+    if (match) {
+      return match[1].replaceDiacritics();
+    }
+
+    match = /^cv:?(.*)\|(.+)$/i.exec(output);
+    if (match) {
+      let groups = match[1] ? _.intersection(Object.keys(this.customVariableData), match[1]) : Object.keys(this.customVariableData);
+      for (let i = 0; i < groups.length; i++) {
+        if (this.customVariableData[groups[i]][match[2]] !== undefined) {
+          return match[2];
+        }
+      }
+      return 'undefined'
+    }
+
+    match = /^os:(.+?)\|(.*?)(?:\|(.*?))?$/i.exec(output);
+    if (match) {
+      const regexPlatform = match[1].toLowerCase();
+      if (regexPlatform === "win" || regexPlatform === "mac" || regexPlatform === "linux") {
+        const platformMap: {[k: string]: string} = { win32: "win", linux: "linux", darwin: "mac" }
+        const platform = platformMap[os.platform()];
+        if (platform) {
+          return ((platform === regexPlatform) ? match[2] : match[3]) || '';
+        }
+      }
+    }
+    return output
+  }
+
   getEnvironmentVariable(variable: EnvironmentVariables, settings: AppSettings) {
     let output = variable as string;
     switch (<EnvironmentVariables>variable.toUpperCase()) {
@@ -637,9 +743,10 @@ export class FileParser {
         output=settings.environmentVariables.localImagesDirectory;
         break;
       default:
+        output = this.execRegex(output)
         break;
     }
-    return output;
+    return output || '';
   }
 
   private getVariable(variable: AllVariables, data: ParserVariableData) {
@@ -713,88 +820,7 @@ export class FileParser {
         output=data.localImagesDirectory;
         break;
       default:
-        {
-          let match = /^\/(.*?)\/([giu]{0,3})\|(.*?)(?:\|(.*?))?$/.exec(output);
-          if (match) {
-            let regex = new RegExp(match[1], match[2] || '');
-            let replaceText = match[4];
-            if (typeof replaceText === 'string') {
-              output = match[3].replace(regex, replaceText);
-            }
-            else {
-              let innerMatch = match[3].match(regex);
-              output = '';
-              if (innerMatch !== null) {
-                for (let i = 1; i < innerMatch.length; i++) {
-                  if (innerMatch[i])
-                    output += innerMatch[i];
-                }
-                if (output.length === 0)
-                  output = innerMatch[0];
-              }
-            }
-            break;
-          }
-
-          match = /^uc\|(.*)$/i.exec(output);
-          if (match) {
-            output = match[1].toUpperCase();
-            break;
-          }
-
-          match = /^lc\|(.*)$/i.exec(output);
-          if (match) {
-            output = match[1].toLowerCase();
-            break;
-          }
-
-          match = /^rdc\|(.*)$/i.exec(output);
-          if (match) {
-            output = match[1].replaceDiacritics();
-            break;
-          }
-
-          match = /^cv:?(.*)\|(.+)$/i.exec(output);
-          if (match) {
-            let groups = match[1] ? _.intersection(Object.keys(this.customVariableData), match[1]) : Object.keys(this.customVariableData);
-            let found = false;
-            for (let i = 0; i < groups.length; i++) {
-              if (this.customVariableData[groups[i]][match[2]] !== undefined) {
-                output = match[2];
-                found = true;
-                break;
-              }
-            }
-            if (!found)
-              output = unavailable;
-            break;
-          }
-
-          match = /^os:(.+?)\|(.*?)(?:\|(.*?))?$/i.exec(output);
-          if (match) {
-            const regexPlatform = match[1].toLowerCase();
-            if (regexPlatform === "win" || regexPlatform === "mac" || regexPlatform === "linux") {
-              let platform: string = null;
-              switch (os.platform()) {
-                case "win32":
-                  platform = "win";
-                  break;
-                case "linux":
-                  platform = "linux";
-                  break;
-                case "darwin":
-                  platform = "mac";
-                  break;
-                default:
-                  break;
-              }
-
-              if (platform !== null) {
-                output = ((platform === regexPlatform) ? match[2] : match[3]) || '';
-              }
-            }
-          }
-        }
+        output = this.execRegex(output);
         break;
     }
     return output || '';

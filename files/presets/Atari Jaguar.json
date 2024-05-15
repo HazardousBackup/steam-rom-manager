@@ -39,7 +39,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -76,7 +76,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Atari Jaguar - Retroarch(Flatpak) - Virtual Jaguar": {
 		"parserType": "Glob",
@@ -118,7 +120,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -155,6 +157,8 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	}
 }

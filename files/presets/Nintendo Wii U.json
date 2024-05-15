@@ -39,7 +39,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -76,7 +76,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": "${dir}/../*${/\\[.*?\\]/g|${title}|}*/meta/iconTex.tga"
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Nintendo Wii U - (NUS/WUP) (Flatpak)": {
 		"parserType": "Glob",
@@ -118,7 +120,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -155,7 +157,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": "${dir}/../*${/\\[.*?\\]/g|${title}|}*/meta/iconTex.tga"
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Nintendo Wii U - Cemu (RPX)": {
 		"parserType": "Glob",
@@ -197,7 +201,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -234,7 +238,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": "${dir}/../*${/\\[.*?\\]/g|${title}|}*/meta/iconTex.tga"
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Nintendo Wii U - Cemu (RPX) (Flatpak)": {
 		"parserType": "Glob",
@@ -276,7 +282,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -313,7 +319,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": "${dir}/../*${/\\[.*?\\]/g|${title}|}*/meta/iconTex.tga"
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Nintendo Wii U - Cemu (RPX - Installed)": {
 		"parserType": "Glob",
@@ -355,7 +363,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -392,7 +400,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": "${dir}/../*${/\\[.*?\\]/g|${title}|}*/meta/iconTex.tga"
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Nintendo Wii U - Cemu (RPX - Installed) (Flatpak)": {
 		"parserType": "Glob",
@@ -434,7 +444,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -471,7 +481,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": "${dir}/../*${/\\[.*?\\]/g|${title}|}*/meta/iconTex.tga"
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Nintendo Wii U - Cemu (WUD/WUX)": {
 		"parserType": "Glob",
@@ -513,7 +525,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -550,7 +562,9 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	},
 	"Nintendo Wii U - Cemu (WUD/WUX) (Flatpak)": {
 		"parserType": "Glob",
@@ -592,7 +606,7 @@
 			"shortcutPassthrough": false,
 			"appendArgsToExecutable": true
 		},
-		"presetVersion": 7,
+		"presetVersion": 9,
 		"imageProviderAPIs": {
 			"SteamGridDB": {
 				"nsfw": false,
@@ -629,6 +643,8 @@
 			"hero": "",
 			"logo": "",
 			"icon": ""
-		}
+		},
+		"steamInputEnabled": "1",
+		"drmProtect": false
 	}
 }

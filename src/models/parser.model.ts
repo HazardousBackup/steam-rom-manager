@@ -15,6 +15,7 @@ export interface ParsedUserConfigurationFile extends StringMap {
   fuzzyTitle: string,
   finalTitle: string,
   argumentString: string,
+  appendArgsToExecutable: boolean,
   onlineImageQueries: string[],
   steamCategories: string[],
   imagePool: string,
@@ -36,11 +37,12 @@ export interface ParsedUserConfiguration {
   configurationTitle: string,
   parserId: string,
   parserType: ParserType,
+  drmProtect: boolean,
   imageProviders: string[],
   imageProviderAPIs: ImageProviderAPI,
   controllers: Controllers,
+  steamInputEnabled: SteamInputEnabled,
   steamDirectory: string,
-  appendArgsToExecutable: boolean,
   shortcutPassthrough: boolean,
   foundUserAccounts: userAccountData[],
   missingUserAccounts: string[],
@@ -63,15 +65,18 @@ export interface ParserInputField {
 
 
 // TODO Split this up more sanely into ImporterParsedData and ManagerParsedData
+export interface ParsedSuccess {
+  extractedTitle: string,
+  filePath?: string, // Used by ROM parsers, and platform parsers in executable mode
+  extractedAppId?: string // Used by artwork only parsers
+  launchOptions?: string, // Used by platform parsers in launcher mode
+  fileLaunchOptions?: string, // Used by platform parsers executable mode
+  startInDirectory?: string, //Used by manual parsers and parsers whose apps start in a different directory than the executable,
+  appendArgsToExecutable?: boolean //Used by manual parsers
+}
 export interface ParsedData {
   executableLocation?: string // Used by platform parsers in launcher mode
-  success: {
-    extractedTitle: string,
-    filePath?: string, // Used by ROM parsers and platform parsers in executable mode
-    extractedAppId?: string // Used by artwork only parsers
-    launchOptions?: string, // Used by platform parsers
-    startInDirectory?: string, //Used by manual parsers and apps the start in a different directory than the executable
-  }[],
+  success: ParsedSuccess[],
   failed: string[]
 }
 
@@ -107,10 +112,11 @@ export type PathVariables = (typeof pathVariables)[number];
 export type ParserVariables = (typeof parserVariables)[number];
 export type EnvironmentVariables = (typeof environmentVariables)[number];
 
+const steamInputEnabled = StringLiteralArray(['0','1','2']) // 0 disabled, 1 global settings, 2 enabled
+export type SteamInputEnabled = (typeof steamInputEnabled)[number];
 
 
-
-export type ParserType = 'Glob' | 'Glob-regex' | 'Manual' | 'Amazon Games' | 'Epic' | 'Legendary' | 'GOG Galaxy' | 'itch.io' | 'Steam' | 'UPlay' | 'UWP' | 'EA Desktop' | 'Raw GOG';
+export type ParserType = 'Glob' | 'Glob-regex' | 'Manual' | 'Amazon Games' | 'Epic' | 'Legendary' | 'GOG Galaxy' | 'itch.io' | 'Steam' | 'Non-SRM Shortcuts' | 'UPlay' | 'UWP' | 'EA Desktop'| 'Battle.net' | 'Raw GOG';
 export type SuperType = 'Manual'|'ArtworkOnly'|'ROM'|'Platform';
 
 export interface ParserInfo {

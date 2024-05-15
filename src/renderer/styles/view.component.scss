@@ -1,6 +1,8 @@
 @import 'mixins';
 
 :host {
+  --view-details-width: 0%;
+
   display: grid;
   overflow: auto;
 
@@ -10,9 +12,29 @@
   'gamesList details'
   'menu menu';
 
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: auto var(--view-details-width);
   grid-template-rows: auto 1fr auto;
+ .loadingSpinner {
+    &:before {
+      display: block;
+      justify-content: center;
+      width: 5em;
+      height: 5em;
+      margin-top: 40vh;
+      content: "";
+      animation: loadingSpinner 0.6s linear infinite;
 
+      border-top: 0.325em solid transparent;
+      border-top-color: var(--color-app-loading-spinner);
+      border-right: 0.325em solid transparent;
+      border-radius: 50%;
+    }
+  }
+  @keyframes loadingSpinner {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 
   .upperMenu {
     grid-area: upperMenu;
@@ -22,7 +44,7 @@
       display:flex;
       align-items: center;
       justify-content: right;
-      .searchExceptions {
+      .searchGames {
         @include ngTextInputColor(input);
         @include ngTextInput();
         margin: 0.5em;
@@ -93,18 +115,89 @@
             color: var(--color-preview-text);
             border-top: solid 2px var(--color-preview-user-background);
             padding: 1em;
+            &:hover, &.currentShortcut {
+              background-color: var(--color-ng-select-option-background-hover);
+              color: var(--color-ng-select-option-text-hover);
+            }
           }
+        }
+        &.hidden {
+          > .title {
+            svg {
+              transform: rotate(-90deg);
+            }
+          }
+          > .apps {
+            display: none;
+          }
+        }
+      }
+      &.hidden {
+        > .title {
+          svg {
+            transform: rotate(-90deg);
+          }
+        }
+        > .user {
+          display: none;
         }
       }
     }
   }
 
   .details {
-    padding: 1em;
+    padding: 2em;
     grid-area: details;
     @include webkitScrollbar(nested-form-scrollbar);
     background-color: var(--color-nested-form-background);
+    color: var(--color-settings-text);
     overflow: auto;
+    .loadingSpinner {
+      &:before {
+        margin-left: calc(var(--view-details-width) - 2.5em)
+      }
+    }
+    .launch {
+      @include button();
+      @include clickButtonColor(click-button);
+      margin-bottom: 16px;
+    }
+    .section {
+      margin-top: 2em;
+      margin-bottom: 1em;
+      border-bottom: 0.1em solid;
+      border-bottom-color: var(--color-nested-form-label);
+      .sectionLabel {
+
+      }
+    }
+    .infos {
+      .info {
+        .infoLabel {
+        }
+        .infoArea {
+          @include ngTextInputColor(input);
+          overflow-wrap:break-word;
+          margin-top: 1em;
+          margin-bottom: 1em;
+          padding: .5em;
+          &:hover {
+            opacity: .5;
+          }
+        }
+      }
+    }
+    .artworks {
+      .artworkContainer {
+        width: 100%;
+        margin-bottom:1em;
+        .artwork {
+          margin-top: .5em;
+          max-width: 80%;
+          max-height: 200px;
+        }
+      }
+    }
   }
 
   .menu {

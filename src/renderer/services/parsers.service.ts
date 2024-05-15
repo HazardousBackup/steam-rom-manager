@@ -91,9 +91,9 @@ export class ParsersService {
                 return this.savedControllerTemplates.asObservable();
               }
 
-              getControllerTemplates(steamDir: string, controllerType: string): any[] {
+              async getControllerTemplates(steamDir: string, controllerType: string): Promise<any[]> {
                 try {
-                  return ControllerManager.readTemplates(steamDir, controllerType);
+                  return await ControllerManager.readTemplates(steamDir, controllerType);
                 } catch (error) {
                   this.loggerService.error(this.lang.error.fetchingTemplates, {invokeAlert: true, alertTimeout: 3000});
                   this.loggerService.error(error);
@@ -103,6 +103,7 @@ export class ParsersService {
               removeControllers(steamDir: string, userId: string, parserId?: string) {
                 const controllerManager: ControllerManager = new ControllerManager();
                 controllerManager.removeAllControllersAndWrite(steamDir, userId, parserId);
+                controllerManager.removeAllControllersEnabledAndWrite(steamDir, userId, parserId);
               }
 
               parseSteamDir(steamDirInput: string) {
@@ -115,7 +116,10 @@ export class ParsersService {
               parseUserAccounts(accountsInfo: UserAccountsInfo, steamDir: string) {
                 return new Promise<string[]>((resolve, reject)=>{
                   let preParser = new VariableParser({ left: '${', right: '}' });
-                  let accountList = preParser.setInput(accountsInfo.specifiedAccounts).parse() ? _.uniq(preParser.extractVariables(data => null)) : [];
+                  let specifiedAccounts = preParser.setInput(accountsInfo.specifiedAccounts).parse() ? preParser.replaceVariables((variable)=>{
+                    return this.fileParser.getEnvironmentVariable(variable as EnvironmentVariables, this.appSettings).trim();
+                  }): null;
+                  let accountList = preParser.setInput(specifiedAccounts).parse() ? _.uniq(preParser.extractVariables(data => null)) : [];
                   steam.getAvailableLogins(steamDir).then((data)=>{
                     data=data.filter(x=>fs.existsSync(path.join(steamDir,'userdata',x.accountID)));
                     if(accountList.length) {
@@ -200,7 +204,7 @@ export class ParsersService {
                     return;
                   else
                     userConfigurations[index].current.parserId = userConfigurations[index].saved.parserId;
-                  if(userConfigurations[index].current.parserType==='Steam') {
+                  if(parserInfo.superTypesMap[userConfigurations[index].current.parserType]===parserInfo.ArtworkOnlyType) {
                     userConfigurations[index].current.titleFromVariable.tryToMatchTitle=false;
                   }
                   userConfigurations[index] = { saved: userConfigurations[index].current, current: null };
@@ -303,7 +307,7 @@ export class ParsersService {
                     return (data == null || data.length === 0 || this.validateEnvironmentPath(data || '', true)) ? null : this.lang.validationErrors.startInDir__md;
                   case 'userAccounts':
                     {
-                    if(options && options.parserType=='Steam') {
+                    if(options && parserInfo.superTypesMap[options.parserType as ParserType]==parserInfo.ArtworkOnlyType) {
                       return data && data.specifiedAccounts ? this.validateVariableParserString(data.specifiedAccounts||'') : this.lang.validationErrors.userAccounts__md;
                     } else{
                       return this.validateVariableParserString((data||{}).specifiedAccounts || '');

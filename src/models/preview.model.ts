@@ -1,14 +1,17 @@
 import { Observable, BehaviorSubject } from "rxjs";
 import { ImageProviderAPI } from "./user-configuration.model";
 import { Controllers } from "./controllers.model";
-import { ParserType } from "./parser.model";
+import { ParserType, SteamInputEnabled } from "./parser.model";
 
 export type ImageDownloadStatus = 'notStarted' | 'downloading' | 'done' | 'failed';
+export type ImageProvider = 'SteamGridDB' | 'Steam' | 'LocalStorage' | 'Fallback' | 'ArtworkBackup' | 'ManuallyAdded' | 'Imported'
 
 export interface ImageContent {
-    imageProvider: 'SteamGridDB' | 'GoogleImages' | 'Steam' | 'LocalStorage',
+    imageProvider: ImageProvider,
     imageUploader?: string,
     imageRes?: string,
+    imageGameId?: string, // sgdb game id
+    imageArtworkId?: string, // sgdb artwork id
     imageUrl: string,
     loadStatus: ImageDownloadStatus
 };
@@ -22,12 +25,15 @@ export interface ImagesStatusAndContent {
 }
 
 export interface AppImages {
-    [extractedTitle: string]: ImagesStatusAndContent
+    [artworkType: string]: {
+        [imagePool: string]: ImagesStatusAndContent
+    }
 };
 
 export interface PreviewDataAppImage {
     steam: ImageContent,    // 0? index
     default: ImageContent,  // 0-1? index
+    local: ImageContent[],
     imagePool: string,      // 0-2+ index
     imageIndex: number
 }
@@ -36,11 +42,13 @@ export interface PreviewDataAppImage {
 export interface PreviewDataApp {
     entryId: number,
     changedId?: string,
+    sgdbId?: string,
     status: 'add' | 'skip' | 'remove',
     configurationTitle: string,
     parserId: string,
     parserType: ParserType,
     steamCategories: string[],
+    steamInputEnabled: SteamInputEnabled,
     controllers: Controllers,
     imageProviders: string[],
     startInDirectory: string,
@@ -48,6 +56,7 @@ export interface PreviewDataApp {
     title: string,
     extractedTitle: string,
     argumentString: string,
+    drmProtect: boolean,
     images: {
       [artworkType: string]: PreviewDataAppImage
     }
